@@ -9,8 +9,10 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
 
 using namespace std;
+
 struct ProdNameSorter {
     bool operator()(Product* p1, Product* p2) {
         return (p1->getName() < p2->getName());
@@ -29,7 +31,8 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
+
 
 
 
@@ -61,55 +64,77 @@ int main(int argc, char* argv[])
     cout << "  QUIT new_db_filename               " << endl;
     cout << "====================================" << endl;
 
+
     vector<Product*> hits;
     bool done = false;
-    while(!done) {
+    while (!done) {
         cout << "\nEnter command: " << endl;
         string line;
-        getline(cin,line);
+        getline(cin, line);
         stringstream ss(line);
         string cmd;
-        if((ss >> cmd)) {
-            if( cmd == "AND") {
+        if ((ss >> cmd)) {
+            if (cmd == "AND") {
                 string term;
                 vector<string> terms;
-                while(ss >> term) {
+                while (ss >> term) {
                     term = convToLower(term);
                     terms.push_back(term);
                 }
                 hits = ds.search(terms, 0);
                 displayProducts(hits);
-            }
-            else if ( cmd == "OR" ) {
+            } else if (cmd == "OR") {
                 string term;
                 vector<string> terms;
-                while(ss >> term) {
+                while (ss >> term) {
                     term = convToLower(term);
                     terms.push_back(term);
                 }
                 hits = ds.search(terms, 1);
                 displayProducts(hits);
-            }
-            else if ( cmd == "QUIT") {
+            } else if (cmd == "QUIT") {
                 string filename;
-                if(ss >> filename) {
+                if (ss >> filename) {
                     ofstream ofile(filename.c_str());
                     ds.dump(ofile);
                     ofile.close();
                 }
                 done = true;
-            }
-	    /* Add support for other commands here */
-
-
-
-
-            else {
+            } else if (cmd == "ADD") {
+                string username;
+                int hit_number;
+                if (ss >> username >> hit_number) {
+                    hits = ds.getHits();
+                    if (hit_number >= 0 && hit_number < static_cast<int>(hits.size())) {
+                        ds.addToCart(username, hits[hit_number]);
+                        cout << "Product added to cart" << endl;
+                    } else {
+                        cout << "Invalid search hit number" << endl;
+                    }
+                } else {
+                    cout << "Invalid ADD command" << endl;
+                }
+            } else if (cmd == "VIEWCART") {
+                string username;
+                if (ss >> username) {
+                    ds.viewCart(username);
+                } else {
+                    cout << "Invalid VIEWCART command" << endl;
+                }
+            } else if (cmd == "BUYCART") {
+                string username;
+                if (ss >> username) {
+                    ds.buyCart(username);
+                    cout << "Cart purchased" << endl;
+                } else {
+                    cout << "Invalid BUYCART command" << endl;
+                }
+            } else {
                 cout << "Unknown command" << endl;
             }
         }
-
     }
+
     return 0;
 }
 

@@ -15,17 +15,51 @@ std::string convToLower(std::string src)
     to a set of words based on the criteria given in the assignment **/
 std::set<std::string> parseStringToWords(string rawWords)
 {
+    // Define a set to store the parsed keywords
+    std::set<std::string> keywords;
 
+    // Convert the string to lowercase
+    rawWords = convToLower(rawWords);
 
+    // Use stringstream to tokenize the string by whitespace
+    std::stringstream ss(rawWords);
+    std::string word;
+    while (ss >> word) {
+        // Remove leading and trailing spaces from each word
+        word = trim(word);
 
+        // If the word has at least 2 characters, add it to the set of keywords
+        if (word.length() >= 2) {
+            keywords.insert(word);
+        } else {
+            // If the word has less than 2 characters, continue to the next word
+            continue;
+        }
 
+        // Split the word by punctuation and add resulting substrings (with at least 2 characters) to keywords
+        std::string substring;
+        for (char& c : word) {
+            if (std::isalnum(c)) {
+                // Append alphanumeric characters to the substring
+                substring += c;
+            } else {
+                // If a punctuation character is encountered, add the substring to keywords if it has at least 2 characters
+                if (substring.length() >= 2) {
+                    keywords.insert(substring);
+                }
+                // Clear the substring for the next sequence of characters
+                substring.clear();
+            }
+        }
+        // Add the remaining substring if it has at least 2 characters
+        if (substring.length() >= 2) {
+            keywords.insert(substring);
+        }
+    }
 
-
-
-
-
-
+    return keywords;
 }
+
 
 /**************************************************
  * COMPLETED - You may use the following functions
