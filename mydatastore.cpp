@@ -1,3 +1,4 @@
+#include <sstream>
 #include "mydatastore.h"
 
 MyDataStore::MyDataStore() {

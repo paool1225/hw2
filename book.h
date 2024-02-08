@@ -5,10 +5,22 @@
 
 class Book : public Product {
 public:
-    Book(const std::string& name, double price, int qty, const std::string& isbn, const std::string& author);
-    virtual ~Book();
+    // Constructor
+    Book(const std::string& isbn, const std::string& author, const std::string& name, double price, int qty);
 
-    // Implementing the getInfo() function
+    // Destructor
+    ~Book();
+
+    // Returns keywords associated with the book
+    virtual std::set<std::string> keywords() const override;
+
+    // Returns a string representation of the book
+    virtual std::string displayString() const override;
+
+    // Outputs the book's data to the provided output stream
+    virtual void dump(std::ostream& os) const override;
+
+    // Returns information about the book
     virtual std::string getInfo() const override;
 
 private:
@@ -16,4 +28,4 @@ private:
     std::string author_;
 };
 
-#endif
+#endif // BOOK_H
