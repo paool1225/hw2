@@ -33,7 +33,7 @@ util.o: util.cpp util.h
 
 # Add rules for compiling the missing implementation files
 book.o: book.cpp book.h product.h
-	$(CXX) $(CXXFLAGS) -c B=book.cpp
+	$(CXX) $(CXXFLAGS) -c book.cpp
 
 clothing.o: clothing.cpp clothing.h product.h
 	$(CXX) $(CXXFLAGS) -c clothing.cpp
