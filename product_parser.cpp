@@ -1,27 +1,17 @@
 #include <iostream>
 #include <sstream>
-#include <cctype>
-#include <algorithm>
 #include "product_parser.h"
-#include "book.h"
-#include "clothing.h"
-#include "movie.h"
-using namespace std;
+#include "Book.h"
+#include "Clothing.h"
+#include "Movie.h"
 
+using namespace std;
 
 static std::string &trim(std::string &s);
 
-ProductParser::ProductParser() 
-{
- 
-}
+ProductParser::ProductParser() {}
 
-
-ProductParser::~ProductParser()
-{
-
-}
-
+ProductParser::~ProductParser() {}
 
 Product* ProductParser::parse(string category,
 			      istream& is,
@@ -29,9 +19,8 @@ Product* ProductParser::parse(string category,
 			      string& errorMsg,
 			      int& lineno)
 {
-
   parseCommonProduct(is, error, errorMsg, lineno);
-  if(error) return NULL;
+  if(error) return nullptr;
   return parseSpecificProduct(category, is, error, errorMsg, lineno);
 }
 
@@ -39,7 +28,6 @@ void ProductParser::parseCommonProduct(std::istream& is,
 				       bool& error,
 				       string& errorMsg,
 				       int& lineno)
-  
 {
   lineno++;
   string myline;
@@ -82,149 +70,174 @@ void ProductParser::parseCommonProduct(std::istream& is,
   }
 }
 
+// Used from http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+// trim from start
 static inline std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
         return s;
 }
 
-// Definition of trim function
-static inline std::string &trim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
-        return !std::isspace(ch);
-    }));
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-        return !std::isspace(ch);
-    }).base(), s.end());
-    return s;
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+        return s;
 }
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+        return ltrim(rtrim(s));
+}
+
+ProductBookParser::ProductBookParser() : ProductParser() {}
 
 Product* ProductBookParser::parseSpecificProduct(std::string category,
-                                                 std::istream& is,
-                                                 bool& error,
-                                                 std::string& errorMsg,
-                                                 int& lineno)
+						 std::istream& is,
+						 bool& error,
+						 std::string& errorMsg,
+						 int& lineno)
 {
-    lineno++;
-    string myline;
-    getline(is, myline);
-    stringstream ss3(myline);
-    ss3 >> isbn_;
-    if(ss3.fail()) {
-        error = true;
-        errorMsg = "Unable to read ISBN";
-    }
+  lineno++;
+  string myline;
+  getline(is, myline);
+  stringstream ss3(myline);
+  ss3 >> isbn_;
+  if(ss3.fail()){
+    error = true;
+    errorMsg = "Unable to read ISBN";
+  }
   
-    lineno++;
-    getline(is, author_);
-    if(is.fail()) {
-        error = true;
-        errorMsg = "Unable to read author";
-    }
-    
-    if(error) {
-        return nullptr;
-    }
-    
+  lineno++;
+  getline(is, author_);
+  if(is.fail()){
+    error = true;
+    errorMsg = "Unable to read author";
+  }
 #ifdef DEBUG
-    cout << "Making product " << prodName_ << endl;
+  cout << "Making product " << prodName_ << endl;
 #endif
-    return makeProduct();    
+  if(error){
+    return nullptr;
+  }
+  return makeProduct();
+    
 }
 
-std::string ProductBookParser::categoryID() {
-    return "book";
+std::string ProductBookParser::categoryID()
+{
+  return "book";
 }
 
-Product* ProductBookParser::makeProduct() {
-    return new Book(isbn_, author_, prodName_, price_, qty_);
+
+/**
+ * Your job to fill in the code to create a new book product
+ * using the data members in this class and the parent ProductParser class
+ */
+Product* ProductBookParser::makeProduct()
+{
+  Product* nBook = new Book(isbn_, author_, prodName_, price_, qty_);
+  return nBook;
 }
 
-// Implementation of ProductClothingParser methods
-ProductClothingParser::ProductClothingParser() : ProductParser() {}
+
+ProductClothingParser::ProductClothingParser() {}
 
 Product* ProductClothingParser::parseSpecificProduct(std::string category,
-                                                     std::istream& is,
-                                                     bool& error,
-                                                     std::string& errorMsg,
-                                                     int& lineno)
+						 std::istream& is,
+						 bool& error,
+						 std::string& errorMsg,
+						 int& lineno)
 {
-    lineno++;
-    string myline;
-    getline(is, myline);
-    stringstream ss3(myline);
-    ss3 >> size_;
-    if(ss3.fail()) {
-        error = true;
-        errorMsg = "Unable to read size";
-    }
+  lineno++;
+  string myline;
+  getline(is, myline);
+  stringstream ss3(myline);
+  ss3 >> size_;
+  if(ss3.fail()){
+    error = true;
+    errorMsg = "Unable to read size";
+  }
   
-    lineno++;
-    getline(is, brand_);
-    if(is.fail()) {
-        error = true;
-        errorMsg = "Unable to read brand";
-    }
-    
-    if(error) {
-        return nullptr;
-    }
-    
+  lineno++;
+  getline(is, brand_);
+  if(is.fail()){
+    error = true;
+    errorMsg = "Unable to read brand";
+  }
 #ifdef DEBUG
-    cout << "Making product " << prodName_ << endl;
+  cout << "Making product " << prodName_ << endl;
 #endif
-    return makeProduct();    
+  if(error){
+    return nullptr;
+  }
+  return makeProduct();
+    
 }
 
-std::string ProductClothingParser::categoryID() {
-    return "clothing";
+std::string ProductClothingParser::categoryID()
+{
+  return "clothing";
 }
 
-Product* ProductClothingParser::makeProduct() {
-    return new Clothing(size_, brand_, prodName_, price_, qty_);
+
+/**
+ * Your job to fill in the code to create a new clothing product
+ * using the data members in this class and the parent ProductParser class
+ */
+Product* ProductClothingParser::makeProduct()
+{
+  Product* nCloth = new Clothing(size_, brand_, prodName_, price_, qty_);
+  return nCloth;
 }
 
-// Implementation of ProductMovieParser methods
-ProductMovieParser::ProductMovieParser() : ProductParser() {}
+
+ProductMovieParser::ProductMovieParser() {}
 
 Product* ProductMovieParser::parseSpecificProduct(std::string category,
-                                                  std::istream& is,
-                                                  bool& error,
-                                                  std::string& errorMsg,
-                                                  int& lineno)
+						 std::istream& is,
+						 bool& error,
+						 std::string& errorMsg,
+						 int& lineno)
 {
-    lineno++;
-    string myline;
-    getline(is, myline);
-    stringstream ss3(myline);
-    ss3 >> genre_;
-    if(ss3.fail()) {
-        error = true;
-        errorMsg = "Unable to read genre";
-    }
+  lineno++;
+  string myline;
+  getline(is, myline);
+  stringstream ss3(myline);
+  ss3 >> genre_;
+  if(ss3.fail()){
+    error = true;
+    errorMsg = "Unable to read genre";
+  }
   
-    lineno++;
-    getline(is, myline);
-    stringstream ss4(myline);
-    ss4 >> rating_;
-    if(ss4.fail()) {
-        error = true;
-        errorMsg = "Unable to read rating";
-    }
-    
-    if(error) {
-        return nullptr;
-    }
-    
+  lineno++;
+  getline(is, myline);
+  stringstream ss4(myline);
+  ss4 >> rating_;
+  if(ss4.fail()){
+    error = true;
+    errorMsg = "Unable to read rating";
+  }
 #ifdef DEBUG
-    cout << "Making product " << prodName_ << endl;
+  cout << "Making product " << prodName_ << endl;
 #endif
-    return makeProduct();    
+  if(error){
+    return nullptr;
+  }
+  return makeProduct();
+    
 }
 
-std::string ProductMovieParser::categoryID() {
-    return "movie";
+std::string ProductMovieParser::categoryID()
+{
+  return "movie";
 }
 
-Product* ProductMovieParser::makeProduct() {
-    return new Movie(genre_, rating_, prodName_, price_, qty_);
+
+/**
+ * Your job to fill in the code to create a new movie product
+ * using the data members in this class and the parent ProductParser class
+ */
+Product* ProductMovieParser::makeProduct()
+{
+  Product* nMovie = new Movie(genre_, rating_, prodName_, price_, qty_);
+  return nMovie;
 }

@@ -1,37 +1,33 @@
-#ifndef MYDATASTORE_H
-#define MYDATASTORE_H
+#ifndef MY_DATASTORE_H
+#define MY_DATASTORE_H 
 
 #include "datastore.h"
-#include "util.h"
-#include "product.h"
-#include "user.h"
 #include <map>
-#include <set>
-#include <vector>
-#include <fstream>
+#include <queue>
 
-class MyDataStore : public DataStore {
+class MyDataStore : public DataStore
+{
 public:
-    MyDataStore();
-    ~MyDataStore();
+    MyDataStore(); // Constructor
+    ~MyDataStore(); // Destructor
 
     void addProduct(Product* p);
     void addUser(User* u);
-    std::vector<Product*> getHits(); // Declaration of getHits() function
     std::vector<Product*> search(std::vector<std::string>& terms, int type);
-    void addToCart(std::string username, Product* p);
-    void viewCart(std::string username);
-    void buyCart(std::string username);
-    void quit(std::string filename);
-    void dump(std::ostream& ofile) override;
+    void dump(std::ostream& ofile);
+    void addToCart(std::string userName, Product* p);
+    void viewCart(std::string userName);
+    void buyCart(std::string userName);
+
+protected:
+    void updateKeywords();
 
 private:
-    std::map<std::string, std::set<Product*>> keywords_;
     std::map<std::string, User*> users_;
-    std::map<std::string, std::vector<Product*>> carts_;
-
-    std::set<std::string> extractKeywords(std::string text);
-    std::vector<Product*> searchHelper(std::vector<std::string>& terms, int type);
+    std::set<Product*> products_;
+    std::map<std::string, std::queue<Product*>> userCarts_; // Using a queue for each user's cart
+    std::map<std::string, std::set<Product*>> keyWordLink_;
+    bool keyLinkUpdated_;
 };
 
-#endif // MYDATASTORE_H
+#endif

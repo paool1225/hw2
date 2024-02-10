@@ -1,44 +1,46 @@
+#include "Book.h"
+#include "util.h"
 #include <sstream>
-#include "book.h"
 
-// Constructor
-Book::Book(const std::string& isbn, const std::string& author, const std::string& name, double price, int qty)
-    : Product("book", name, price, qty), isbn_(isbn), author_(author) {}
-
-// Destructor
-Book::~Book() {}
-
-// Returns keywords associated with the book
-std::set<std::string> Book::keywords() const {
-    std::set<std::string> bookKeywords;
-    bookKeywords.insert(author_);
-    return bookKeywords;
+Book::Book(std::string ISBN, std::string author, std::string name, double price, int qty) : Product("book", name, price, qty)
+{
+  ISBN_ = ISBN;
+  author_ = author;
 }
 
-// Returns a string representation of the book
-std::string Book::displayString() const {
-    std::string display = Product::displayString() + "\nAuthor: " + author_ + "\nISBN: " + isbn_;
-    return display;
+Book::~Book()
+{
 }
 
-// Outputs the book's data to the provided output stream
-void Book::dump(std::ostream& os) const {
-    os << "book" << std::endl;
-    Product::dump(os);
-    os << isbn_ << std::endl;
-    os << author_ << std::endl;
+std::set<std::string> Book::keywords() const
+{
+  std::set<std::string> keyWords = parseStringToWords(name_);
+  keyWords.insert(ISBN_);
+
+  std::set<std::string> parsedWords = parseStringToWords(author_);
+  for (auto it = parsedWords.begin(); it != parsedWords.end(); ++it)
+    keyWords.insert(*it);
+
+  return keyWords;
 }
 
-// Returns information about the book
-// Returns information about the book
-std::string Book::getInfo() const {
-    std::stringstream info;
-    info << "Category: Book" << std::endl;
-    info << "Name: " << name_ << std::endl;
-    info << "Price: $" << price_ << std::endl;
-    info << "Quantity: " << qty_ << std::endl;
-    info << "ISBN: " << isbn_ << std::endl;
-    info << "Author: " << author_ << std::endl;
-    return info.str();
+std::string Book::displayString() const
+{
+  std::string display = name_ + "\n" +
+                        "Author: " + author_ + " ISBN: " + ISBN_ + "\n";
+
+  std::stringstream num;
+  num << price_;
+  display = display + num.str() + " ";
+  num.str("");
+  num << qty_;
+  display = display + num.str() + " left.";
+
+  return display;
 }
 
+void Book::dump(std::ostream& os) const
+{
+  Product::dump(os);
+  os << ISBN_ << "\n" << author_ << std::endl;
+}

@@ -1,43 +1,34 @@
+#include "Movie.h"
+#include "util.h"
 #include <sstream>
-#include "movie.h"
 
-// Constructor
-Movie::Movie(const std::string& genre, const std::string& rating, const std::string& name, double price, int qty)
+Movie::Movie(std::string genre, std::string rating, std::string name, double price, int qty)
     : Product("movie", name, price, qty), genre_(genre), rating_(rating) {}
 
-// Destructor
 Movie::~Movie() {}
 
-// Returns keywords associated with the movie
 std::set<std::string> Movie::keywords() const {
-    std::set<std::string> movieKeywords;
-    movieKeywords.insert(genre_);
-    movieKeywords.insert(rating_);
-    return movieKeywords;
+    std::set<std::string> keyWords = parseStringToWords(name_);
+    keyWords.insert(convToLower(genre_));
+
+    return keyWords;
 }
 
-// Returns a string representation of the movie
 std::string Movie::displayString() const {
-    std::string display = Product::displayString() + "\nGenre: " + genre_ + "\nRating: " + rating_;
+    std::string display = name_ + "\n" +
+                          "Genre: " + genre_ + " Rating: " + rating_ + "\n";
+
+    std::stringstream num;
+    num << price_;
+    display = display + num.str() + " ";
+    num.str("");
+    num << qty_;
+    display = display + num.str() + " left.";
+
     return display;
 }
 
-// Outputs the movie's data to the provided output stream
 void Movie::dump(std::ostream& os) const {
-    os << "movie" << std::endl;
     Product::dump(os);
-    os << genre_ << std::endl;
-    os << rating_ << std::endl;
-}
-
-// Returns information about the movie
-std::string Movie::getInfo() const {
-    std::stringstream info;
-    info << "Category: Movie" << std::endl;
-    info << "Name: " << name_ << std::endl;
-    info << "Price: $" << price_ << std::endl;
-    info << "Quantity: " << qty_ << std::endl;
-    info << "Genre: " << genre_ << std::endl;
-    info << "Rating: " << rating_ << std::endl;
-    return info.str();
+    os << genre_ << "\n" << rating_ << std::endl;
 }

@@ -1,40 +1,49 @@
 CXX=g++
-CXXFLAGS=-g -Wall 
-# Uncomment for parser DEBUG
-#DEFS=-DDEBUG
+CXXFLAGS=-g -Wall -std=c++11
 
-OBJS=bin/amazon.o bin/mydatastore.o bin/user.o bin/db_parser.o bin/product.o bin/book.o bin/clothing.o bin/movie.o bin/product_parser.o bin/util.o
+# Add the missing implementation files to OBJS
+OBJS=amazon.o user.o db_parser.o product.o product_parser.o util.o Book.o Clothing.o Movie.o mydatastore.o
 
+# The main target
 all: amazon
 
-amazon: $(OBJS) bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o bin/$@ $(OBJS)    # Linking step
+# The executable linking rule
+amazon: $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 
-bin/amazon.o: amazon.cpp db_parser.h datastore.h product_parser.h util.h mydatastore.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c amazon.cpp
-bin/mydatastore.o: mydatastore.cpp mydatastore.h datastore.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c mydatastore.cpp
-bin/user.o: user.cpp user.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c user.cpp
-bin/db_parser.o: db_parser.cpp db_parser.h product.h product_parser.h user.h datastore.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c db_parser.cpp
-bin/product.o: product.cpp product.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c product.cpp
-bin/book.o: book.cpp book.h product.h util.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c book.cpp
-bin/clothing.o: clothing.cpp clothing.h product.h util.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c clothing.cpp
-bin/movie.o: movie.cpp movie.h product.h util.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c movie.cpp
-bin/product_parser.o: product_parser.cpp product_parser.h product.h book.h movie.h clothing.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c product_parser.cpp
-bin/util.o: util.cpp util.h bin/.dirstamp
-	$(CXX) $(CXXFLAGS) $(DEFS) -o $@ -c util.cpp
+# Rule for compiling amazon.cpp
+amazon.o: amazon.cpp db_parser.h datastore.h product_parser.h mydatastore.h
+	$(CXX) $(CXXFLAGS) -c amazon.cpp
 
-bin/.dirstamp:
-	mkdir -p bin
-	touch $@
+# Rules for compiling other source files
+user.o: user.cpp user.h 
+	$(CXX) $(CXXFLAGS) -c user.cpp
 
+db_parser.o: db_parser.cpp db_parser.h product.h product_parser.h user.h mydatastore.h 
+	$(CXX) $(CXXFLAGS) -c db_parser.cpp
 
+product.o: product.cpp product.h 
+	$(CXX) $(CXXFLAGS) -c product.cpp
+
+product_parser.o: product_parser.cpp product_parser.h product.h 
+	$(CXX) $(CXXFLAGS) -c product_parser.cpp
+
+util.o: util.cpp util.h
+	$(CXX) $(CXXFLAGS) -c util.cpp
+
+# Add rules for compiling the missing implementation files
+Book.o: Book.cpp Book.h product.h
+	$(CXX) $(CXXFLAGS) -c Book.cpp
+
+Clothing.o: Clothing.cpp Clothing.h product.h
+	$(CXX) $(CXXFLAGS) -c Clothing.cpp
+
+Movie.o: Movie.cpp Movie.h product.h
+	$(CXX) $(CXXFLAGS) -c Movie.cpp
+
+mydatastore.o: mydatastore.cpp mydatastore.h
+	$(CXX) $(CXXFLAGS) -c mydatastore.cpp
+
+# Clean rule
 clean:
-	rm -rf bin
+	rm -f *.o amazon
