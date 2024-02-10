@@ -2,7 +2,7 @@ CXX=g++
 CXXFLAGS=-g -Wall -std=c++11
 
 # Add the missing implementation files to OBJS
-OBJS=amazon.o user.o db_parser.o product.o product_parser.o util.o Book.o Clothing.o Movie.o mydatastore.o
+OBJS=amazon.o user.o db_parser.o product.o product_parser.o util.o book.o clothing.o movie.o mydatastore.o
 
 # The main target
 all: amazon
@@ -32,14 +32,14 @@ util.o: util.cpp util.h
 	$(CXX) $(CXXFLAGS) -c util.cpp
 
 # Add rules for compiling the missing implementation files
-Book.o: Book.cpp Book.h product.h
-	$(CXX) $(CXXFLAGS) -c Book.cpp
+book.o: book.cpp book.h product.h
+	$(CXX) $(CXXFLAGS) -c B=book.cpp
 
-Clothing.o: Clothing.cpp Clothing.h product.h
-	$(CXX) $(CXXFLAGS) -c Clothing.cpp
+clothing.o: clothing.cpp clothing.h product.h
+	$(CXX) $(CXXFLAGS) -c clothing.cpp
 
-Movie.o: Movie.cpp Movie.h product.h
-	$(CXX) $(CXXFLAGS) -c Movie.cpp
+movie.o: movie.cpp movie.h product.h
+	$(CXX) $(CXXFLAGS) -c movie.cpp
 
 mydatastore.o: mydatastore.cpp mydatastore.h
 	$(CXX) $(CXXFLAGS) -c mydatastore.cpp
